@@ -26,9 +26,11 @@ import {
 } from "lucide-react";
 
 // Types for the visual graph system
+type AppKey = 'gmail' | 'sheets' | 'drive' | 'docs' | 'calendar';
+
 interface GraphNode {
   id: string;
-  type: 'gmail' | 'sheets' | 'drive' | 'docs' | 'calendar';
+  type: AppKey;
   position: { x: number; y: number };
   config: any;
   connections: string[];
@@ -49,7 +51,12 @@ interface GraphState {
 }
 
 // Google Apps configuration options
-const GOOGLE_APPS_CONFIG = {
+const GOOGLE_APPS_CONFIG: Record<AppKey, {
+  name: string;
+  icon: any;
+  color: string;
+  actions: Record<string, { name: string; description: string; config: Record<string, any> }>;
+}> = {
   gmail: {
     name: 'Gmail',
     icon: Mail,
@@ -348,9 +355,9 @@ export default function VisualGraphCustomizer({
     connections: [],
     selectedNode: null
   });
-  const [selectedApp, setSelectedApp] = useState<string>('');
+  const [selectedApp, setSelectedApp] = useState<AppKey | ''>('');
   const [selectedAction, setSelectedAction] = useState<string>('');
-  const [nodeConfig, setNodeConfig] = useState<any>({});
+  const [nodeConfig, setNodeConfig] = useState<Record<string, any>>({});
   const [generatedCode, setGeneratedCode] = useState<string>('');
 
   // Add new node to the graph

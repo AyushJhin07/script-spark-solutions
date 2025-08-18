@@ -110,7 +110,7 @@ interface TutorialStep {
   title: string;
   description: string;
   duration: number;
-  interface: 'gmail' | 'sheets' | 'calendar' | 'drive' | 'script-editor' | 'expense' | 'task';
+  interface: 'gmail' | 'sheets' | 'calendar' | 'drive' | 'script-editor' | 'expense' | 'task' | 'docs';
   cursorPosition: { x: number; y: number };
   actions: TutorialAction[];
   data?: any;

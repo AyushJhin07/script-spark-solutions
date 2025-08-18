@@ -144,7 +144,7 @@ export const EnhancedRealisticDemo: React.FC<RealisticDemoProps> = ({
         
         // Simulate data updates
         if (action.target === 'extract-button') {
-          setSimulatedData(prev => ({
+          setSimulatedData((prev: any) => ({
             ...prev,
             extractedData: {
               invoiceNumber: '#INV-2024-001',
@@ -171,7 +171,7 @@ export const EnhancedRealisticDemo: React.FC<RealisticDemoProps> = ({
           
           // Update cell data
           if (action.target.includes('cell')) {
-            setSimulatedData(prev => ({
+            setSimulatedData((prev: any) => ({
               ...prev,
               sheetData: {
                 ...prev.sheetData,
