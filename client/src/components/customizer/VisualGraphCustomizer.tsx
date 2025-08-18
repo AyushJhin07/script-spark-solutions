@@ -699,7 +699,7 @@ function exportDocumentAsPdf(docId, folderId) {
             {/* App Selection */}
             <div>
               <Label>Select Google App</Label>
-              <Select value={selectedApp} onValueChange={setSelectedApp}>
+              <Select value={selectedApp} onValueChange={(v) => setSelectedApp(v as AppKey)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose an app..." />
                 </SelectTrigger>
