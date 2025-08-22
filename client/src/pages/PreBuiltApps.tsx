@@ -20,10 +20,13 @@ import {
   DollarSign,
   Settings,
   Brain,
-  Chrome
+  Chrome,
+  Headphones,
+  MessageSquare
 } from "lucide-react";
 import ProfessionalGraphCustomizer from "@/components/customizer/ProfessionalGraphCustomizer";
-import EnhancedTutorialDemo from "@/components/demos/EnhancedTutorialDemo";
+import PreBuiltAutomationDemos from "@/components/demos/PreBuiltAutomationDemos";
+import AutomationBuilderWrapper from "@/components/automation/AutomationBuilder";
 
 const preBuiltApps = [
   {
@@ -580,54 +583,82 @@ const preBuiltApps = [
     ],
   },
   {
-    id: "file-organizer",
-    title: "Intelligent File Organizer",
-    description: "Automatically organize Google Drive files by type, date, or content with smart folder structures.",
-    icon: FolderCog,
-    category: "File Management",
-    complexity: "Beginner",
-    setupTime: "20 minutes",
-    monthlyValue: "$400+", 
+    id: "ai-email-assistant",
+    title: "Intelligent Email Assistant with LLM",
+    description: "AI-powered email responses using advanced language models. Responds intelligently based on your company knowledge and custom prompts.",
+    icon: Brain,
+    category: "AI & Communication",
+    complexity: "Advanced",
+    setupTime: "30 minutes",
+    monthlyValue: "$2000+", 
     features: [
-      "Auto-sort files by type and date",
-      "Smart folder creation",
-      "Duplicate file detection",
-      "Permission management automation"
+      "AI-powered email responses with LLM",
+      "Custom company knowledge integration",
+      "Sentiment analysis and tone matching",
+      "Auto-categorization and priority assignment",
+      "Multi-language support",
+      "Learning from your email patterns"
     ],
-    codePreview: `function organizeFiles() {
-  const folder = DriveApp.getFolderById('INBOX_FOLDER_ID');
-  const files = folder.getFiles();
+    codePreview: `function processEmailWithAI() {
+  const threads = GmailApp.search('is:unread label:customer-support');
   
-  while (files.hasNext()) {
-    const file = files.next();
-    const fileName = file.getName();
-    const fileType = getFileType(file);
-    const createDate = file.getDateCreated();
+  threads.forEach(thread => {
+    const email = thread.getMessages()[0];
+    const emailBody = email.getPlainBody();
+    const subject = email.getSubject();
+    const sender = email.getFrom();
     
-    // Determine target folder
-    const targetFolder = getOrCreateFolder(fileType, createDate);
+    // AI Analysis with LLM
+    const aiPrompt = \`
+      Email Content: \${emailBody}
+      Subject: \${subject}
+      Company Knowledge: \${getCompanyKnowledgeBase()}
+      Instructions: Respond professionally, be helpful, match customer tone
+    \`;
     
-    // Move file and set permissions
-    file.moveTo(targetFolder);
-    setAppropriatePermissions(file, fileType);
+    // Call OpenAI/Claude API
+    const aiResponse = callLLMAPI(aiPrompt, {
+      model: 'gpt-4',
+      temperature: 0.7,
+      max_tokens: 500,
+      context: 'customer_support'
+    });
     
-    // Log activity
-    logFileActivity(fileName, targetFolder.getName());
-  }
+    // Send intelligent response
+    email.reply(aiResponse.content, {
+      htmlBody: formatResponse(aiResponse.content),
+      cc: getRelevantTeamMembers(subject)
+    });
+    
+    // Log interaction with sentiment
+    logCustomerInteraction(sender, subject, aiResponse.sentiment);
+  });
 }
 
-function getOrCreateFolder(type, date) {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const folderPath = \`\${type}/\${year}/\${month.toString().padStart(2, '0')}\`;
+function callLLMAPI(prompt, options) {
+  const response = UrlFetchApp.fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + getAPIKey(),
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify({
+      model: options.model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: options.temperature,
+      max_tokens: options.max_tokens
+    })
+  });
   
-  return createFolderPath(folderPath);
+  return JSON.parse(response.getContentText());
 }`,
     useCases: [
-      "Document management systems",
-      "Project file organization",
-      "Client deliverable sorting",
-      "Archive and backup automation"
+      "Customer support email automation",
+      "Sales inquiry intelligent responses", 
+      "HR recruitment email screening",
+      "Technical support ticket handling",
+      "Multi-language customer communication",
+      "Executive assistant email management"
     ],
     customizationOptions: [
       // Google Drive App Specific Options
@@ -776,56 +807,81 @@ function getOrCreateFolder(type, date) {
     ],
   },
   {
-    id: "expense-tracker",
-    title: "Expense Tracker & Approval",
-    description: "Complete expense management with receipt parsing, approval workflows, and reimbursement tracking.",
-    icon: DollarSign,
-    category: "Finance & Operations",
-    complexity: "Advanced",
-    setupTime: "45 minutes",
-    monthlyValue: "$1000+",
+    id: "ai-customer-support",
+    title: "Advanced Customer Support Automation",
+    description: "AI-powered customer support system that triages emails, generates intelligent responses, and manages support tickets with advanced analytics.",
+    icon: Headphones,
+    category: "AI & Customer Service",
+    complexity: "Advanced", 
+    setupTime: "40 minutes",
+    monthlyValue: "$3000+",
     features: [
-      "Receipt email parsing and data extraction", 
-      "Multi-level approval workflows",
-      "Automatic expense categorization",
-      "Reimbursement tracking and reporting"
+      "AI email triage and categorization",
+      "Intelligent response generation with LLM",
+      "Automatic ticket creation and tracking",
+      "Sentiment analysis and escalation rules",
+      "Multi-language support detection",
+      "Customer satisfaction scoring"
     ],
-    codePreview: `function processExpenseReceipt() {
-  const emails = GmailApp.search('has:attachment subject:receipt');
-  const sheet = SpreadsheetApp.openById('EXPENSE_SHEET_ID');
+    codePreview: `function processCustomerSupportEmail() {
+  const threads = GmailApp.search('is:unread label:support');
+  const supportSheet = SpreadsheetApp.openById('SUPPORT_TICKETS_ID');
   
-  emails.forEach(thread => {
-    const message = thread.getMessages()[0];
-    const attachments = message.getAttachments();
+  threads.forEach(thread => {
+    const email = thread.getMessages()[0];
+    const emailBody = email.getPlainBody();
+    const subject = email.getSubject();
+    const sender = email.getFrom();
     
-    attachments.forEach(attachment => {
-      if (attachment.getContentType().includes('image')) {
-        // Extract text from receipt using OCR
-        const extractedData = extractReceiptData(attachment);
-        
-        // Add to expense sheet
-        const row = [
-          new Date(),
-          message.getFrom(),
-          extractedData.amount,
-          extractedData.vendor,
-          extractedData.category,
-          'Pending Approval'
-        ];
-        
-        sheet.appendRow(row);
-        
-        // Trigger approval workflow
-        sendForApproval(extractedData, message.getFrom());
-      }
+    // AI Triage and Analysis
+    const triageResult = analyzeEmailWithAI(emailBody, subject);
+    
+    // Create support ticket
+    const ticketId = 'TICKET-' + Date.now();
+    supportSheet.appendRow([
+      new Date(),
+      ticketId,
+      sender,
+      subject,
+      triageResult.category,
+      triageResult.priority,
+      triageResult.sentiment,
+      'Open'
+    ]);
+    
+    // Generate AI response
+    const aiResponse = generateSupportResponse(emailBody, triageResult);
+    
+    // Send intelligent reply
+    email.reply(aiResponse, {
+      htmlBody: formatSupportResponse(aiResponse),
+      cc: triageResult.escalate ? 'manager@company.com' : ''
     });
+    
+    // Add support label
+    thread.addLabel(GmailApp.getUserLabelByName('Support-Processed'));
   });
+}
+
+function analyzeEmailWithAI(content, subject) {
+  const prompt = \`Analyze this support email:
+  Subject: \${subject}
+  Content: \${content}
+  
+  Categorize as: technical, billing, sales, general
+  Priority: high, medium, low
+  Sentiment: positive, neutral, negative
+  Escalate: true/false\`;
+  
+  return callLLMAPI(prompt);
 }`,
     useCases: [
-      "Employee expense management",
-      "Vendor invoice processing", 
-      "Travel expense tracking",
-      "Project cost monitoring"
+      "24/7 customer support automation",
+      "Technical support ticket management",
+      "Sales inquiry intelligent routing",
+      "Billing dispute resolution",
+      "Product feedback collection",
+      "Multi-language customer service"
     ],
     customizationOptions: [
       // Google Sheets App Specific Options
@@ -1025,50 +1081,75 @@ function getOrCreateFolder(type, date) {
     ],
   },
   {
-    id: "task-automation",
-    title: "Project Task Automator",
-    description: "Automate project tasks, status updates, and team notifications based on Google Sheets data.",
-    icon: CheckCircle2,
-    category: "Project Management",
-    complexity: "Intermediate",
-    setupTime: "35 minutes", 
-    monthlyValue: "$700+",
+    id: "slack-workspace-bridge",
+    title: "Slack-Google Workspace Bridge",
+    description: "Advanced integration bridge that seamlessly connects Slack conversations with Google Workspace apps for unified communication and data flow.",
+    icon: MessageSquare,
+    category: "Enterprise Integration",
+    complexity: "Advanced",
+    setupTime: "45 minutes", 
+    monthlyValue: "$1500+",
     features: [
-      "Automatic task status updates",
-      "Smart deadline reminders",
-      "Progress report generation",
-      "Team notification automation"
+      "Real-time Slack to Google Workspace sync",
+      "Important message auto-archival to Sheets",
+      "Action items from Slack create calendar events",
+      "File shares auto-organized in Drive",
+      "Slack mentions trigger email summaries",
+      "Cross-platform search and analytics"
     ],
-    codePreview: `function updateProjectTasks() {
-  const sheet = SpreadsheetApp.openById('PROJECT_SHEET_ID');
-  const data = sheet.getDataRange().getValues();
+    codePreview: `function processSlackWebhook() {
+  const slackData = JSON.parse(e.postData.contents);
+  const message = slackData.event;
   
-  for (let i = 1; i < data.length; i++) {
-    const [task, assignee, deadline, status, priority] = data[i];
-    const deadlineDate = new Date(deadline);
-    const today = new Date();
-    const daysUntilDeadline = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+  // Process different Slack message types
+  if (message.type === 'message' && message.text) {
+    // Check if message contains action items
+    const actionItems = extractActionItems(message.text);
     
-    // Send reminders based on deadline proximity
-    if (daysUntilDeadline <= 3 && status !== 'Complete') {
-      sendDeadlineReminder(assignee, task, daysUntilDeadline);
+    if (actionItems.length > 0) {
+      // Save to Google Sheets
+      const sheet = SpreadsheetApp.openById('SLACK_ARCHIVE_ID');
+      actionItems.forEach(item => {
+        sheet.appendRow([
+          new Date(),
+          message.user,
+          message.channel,
+          item.text,
+          item.deadline,
+          'Pending'
+        ]);
+        
+        // Create calendar event for action item
+        if (item.deadline) {
+          CalendarApp.createEvent(item.text, item.deadline, item.deadline);
+        }
+      });
     }
     
-    // Auto-update overdue tasks
-    if (daysUntilDeadline < 0 && status !== 'Complete') {
-      sheet.getRange(i + 1, 4).setValue('Overdue');
-      notifyProjectManager(task, assignee);
+    // Check for file shares
+    if (message.files) {
+      organizeSlackFiles(message.files, message.channel);
+    }
+    
+    // Check for mentions that need email summaries
+    if (message.text.includes('@channel') || message.text.includes('@here')) {
+      sendEmailSummary(message, getChannelMembers(message.channel));
     }
   }
-  
-  // Generate weekly progress report
-  generateProgressReport(sheet);
+}
+
+function extractActionItems(text) {
+  // AI-powered action item extraction
+  const prompt = \`Extract action items from: \${text}\`;
+  return callLLMAPI(prompt);
 }`,
     useCases: [
-      "Project milestone tracking",
-      "Team task coordination",
-      "Client project updates", 
-      "Resource allocation management"
+      "Enterprise communication synchronization",
+      "Cross-platform data archival",
+      "Slack action item management",
+      "Team productivity analytics",
+      "Automated meeting scheduling from Slack",
+      "Unified workspace search and retrieval"
     ],
     customizationOptions: [
       // Google Sheets App Specific Options
@@ -1316,8 +1397,10 @@ export default function PreBuiltApps() {
   const [activeApp, setActiveApp] = useState("email-automation");
   const [showCode, setShowCode] = useState(false);
   const [showCustomizer, setShowCustomizer] = useState(false);
-  const [showEnhancedTutorialDemo, setShowEnhancedTutorialDemo] = useState(false);
+  const [showAutomationDemo, setShowAutomationDemo] = useState(false);
+  const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedForDemo, setSelectedForDemo] = useState("");
 
   const currentApp = preBuiltApps.find(app => app.id === activeApp);
   const categories = Array.from(new Set(preBuiltApps.map(app => app.category)));
@@ -1335,7 +1418,7 @@ export default function PreBuiltApps() {
 
   const handleTryDemo = (appId: string) => {
     setActiveApp(appId);
-    setShowEnhancedTutorialDemo(true);
+    setShowAutomationDemo(true);
   };
 
 
@@ -1394,13 +1477,12 @@ export default function PreBuiltApps() {
               implement immediately. No monthly fees, no vendor lock-in, just powerful automation.
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={() => setShowCode(true)} className="hover-glow">
+              <Button size="lg" onClick={() => setShowAutomationDemo(true)} className="hover-glow bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                 <Play className="size-5 mr-2" />
-                Try Live Demo
+                🎬 Watch Demo
               </Button>
               <Button variant="outline" size="lg" className="glass-card">
-                <Download className="size-5 mr-2" />
-                Download Samples
+                📞 Book 30-min Call
               </Button>
             </div>
           </div>
@@ -1505,26 +1587,25 @@ export default function PreBuiltApps() {
                     <div className="grid grid-cols-2 gap-3 mt-6">
                       <Button 
                         size="sm" 
-                        variant="outline"
-                        className="rounded-xl border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-200 shadow-sm hover:shadow-md"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedForDemo(app.id);
+                          handleTryDemo(app.id);
                         }}
                       >
                         <Play className="size-3 mr-1" />
-                        Try Demo
+                        🎬 Watch Demo
                       </Button>
                       <Button 
                         size="sm"
-                        className="rounded-xl bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        variant="outline"
+                        className="rounded-xl border-2 hover:border-green-500 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCustomize(app.id);
+                          window.open('tel:+1234567890', '_blank');
                         }}
                       >
-                        <Settings className="size-3 mr-1" />
-                        Customize
+                        📞 Book Call
                       </Button>
                     </div>
                   </div>
@@ -1566,10 +1647,8 @@ export default function PreBuiltApps() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-6">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="demo">Live Demo</TabsTrigger>
-                  <TabsTrigger value="customize">Customize</TabsTrigger>
                   <TabsTrigger value="features">Features</TabsTrigger>
                   <TabsTrigger value="code">Code Preview</TabsTrigger>
                   <TabsTrigger value="use-cases">Use Cases</TabsTrigger>
@@ -1616,54 +1695,6 @@ export default function PreBuiltApps() {
                       </CardContent>
                     </Card>
                   </div>
-                </TabsContent>
-
-                <TabsContent value="demo" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Play className="size-5" />
-                        Live Demo
-                      </CardTitle>
-                      <CardDescription>
-                        Experience how this automation works in real-time with realistic Google Apps interfaces
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="text-center py-12">
-                        <div className="max-w-md mx-auto">
-                          <div className="size-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                            <Play className="size-8 text-primary" />
-                          </div>
-                          <h3 className="text-xl font-semibold mb-2">Interactive Demo</h3>
-                          <p className="text-muted-foreground mb-6">
-                            Click the "Try Demo" button above to see the enhanced tutorial demo with realistic visual progression.
-                          </p>
-                          <Button 
-                            onClick={() => setShowEnhancedTutorialDemo(true)}
-                            className="hover-glow"
-                          >
-                            <Play className="size-4 mr-2" />
-                            Launch Enhanced Demo
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-
-                </TabsContent>
-
-                <TabsContent value="customize" className="mt-6">
-                  <ProfessionalGraphCustomizer
-                    scriptId={currentApp?.id || ""}
-                    scriptTitle={currentApp?.title || ""}
-                    onDownload={(customizedCode, config) => {
-                      // This would handle the download with customizations
-                      console.log("Downloading customized script:", { customizedCode, config });
-                      alert("Custom script download would start here with your professional graph customizations!");
-                    }}
-                  />
                 </TabsContent>
                 
                 <TabsContent value="features" className="mt-6">
@@ -1779,14 +1810,33 @@ export default function PreBuiltApps() {
           </div>
         </section>
 
-        {/* Enhanced Tutorial Demo Modal */}
-        {showEnhancedTutorialDemo && (
-          <EnhancedTutorialDemo
-            scriptId={currentApp?.id || ""}
-            scriptTitle={currentApp?.title || ""}
-            onClose={() => setShowEnhancedTutorialDemo(false)}
-          />
+        {/* Animated Screen Recording Demo Modal */}
+        {showAutomationDemo && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
+            <div className="min-h-screen flex items-center justify-center p-4">
+              <div className="w-full max-w-7xl bg-white rounded-2xl shadow-2xl">
+                <div className="p-6 border-b flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50">
+                  <div>
+                    <h2 className="text-3xl font-bold">🎬 {currentApp?.title} Demo</h2>
+                    <p className="text-gray-600">Watch how this automation works with your Google Workspace</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setShowAutomationDemo(false)}
+                    className="h-10 w-10 p-0 rounded-full hover:bg-gray-100"
+                  >
+                    ✕
+                  </Button>
+                </div>
+                <div className="p-6">
+                  <PreBuiltAutomationDemos />
+                </div>
+              </div>
+            </div>
+          </div>
         )}
+
+
       </main>
     </>
   );
